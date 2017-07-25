@@ -1,3 +1,5 @@
+package ConsoleChat;
+
 import java.io.*;
 import java.net.Socket;
 
@@ -27,8 +29,6 @@ public class ChatClient {
                 String line = in.readLine();
                 if (line != null) {
                     System.out.println(">>> Server: " + line);
-                } else {
-                    break;
                 }
             }
         }catch(IOException e){
