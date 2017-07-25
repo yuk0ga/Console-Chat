@@ -1,3 +1,5 @@
+package ConsoleChat;
+
 import java.io.*;
 import java.net.Socket;
 
