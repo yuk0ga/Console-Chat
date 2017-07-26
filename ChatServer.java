@@ -9,19 +9,18 @@ import java.net.Socket;
  */
 public class ChatServer {
 
-
     static int port = 1234;
 
     static ServerSocket ss;
     static Socket s;
 
-    static String line;
-    static String input;
-
-    static PrintWriter out;
-
-
     public static void main(String[] args) {
+
+        Receivemsg receive = new Receivemsg();
+        Sendmsg send = new Sendmsg();
+
+        Thread receiver = new Thread(receive);
+        Thread sender = new Thread(send);
 
         try{
             ss = new ServerSocket(port);
@@ -30,21 +29,8 @@ public class ChatServer {
             s = ss.accept();
             System.out.println("Connection Established with client: " + s.getRemoteSocketAddress());
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
-            out = new PrintWriter(s.getOutputStream(), true);
-            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
-            line = in.readLine();
-            input = br.readLine();
-
-            while(true){
-                if (!line.equals("bye")) {
-                    System.out.println(">>> Client: " + line);
-                }
-                if (input.length()>0) {
-                    out.println(input);
-                }
-            }
+            receiver.start();
+            sender.start();
 
         }catch(IOException e){
             e.printStackTrace();
@@ -52,5 +38,62 @@ public class ChatServer {
     }
 
 }
+
+
+class Sendmsg implements Runnable {
+    @Override
+    public void run() {
+        String input;
+        PrintWriter out = null;
+        try {
+            out = new PrintWriter(ChatServer.s.getOutputStream(), true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        try {
+            while (!(input = br.readLine()).equals("bye")){
+                out.println(input);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+//Sends
+//      String input;
+//      PrintWriter out = new PrintWriter(s.getOutputStream(), true);
+//      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+//      while ((input = br.readLine()).length() > 0){
+//        out.println(input);
+//      }
+
+
+class Receivemsg implements Runnable {
+    @Override
+    public void run() {
+        String line;
+        BufferedReader in = null;
+        try {
+            in = new BufferedReader(new InputStreamReader(ChatServer.s.getInputStream()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            while((line = in.readLine()) != null) {
+                System.out.println("> Client: " + line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+//Receives
+//      String line;
+//      BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+//      while((line = in.readLine()) != null) {
+//        System.out.println(">>> Server: " + line);
+//      }
 
 
