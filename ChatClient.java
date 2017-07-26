@@ -1,4 +1,3 @@
-package ConsoleChat;
 
 import java.io.*;
 import java.net.Socket;
@@ -12,6 +11,8 @@ public class ChatClient {
 
     static int port = 1234;
 
+    static String line;
+
     public static void main(String[] args) {
 
         try{
@@ -24,12 +25,11 @@ public class ChatClient {
 
             String input;
 
-            while((input = br.readLine()).length()>0) {
+            while(!(input = br.readLine()).equals("bye")) {
                 out.println(input);
-                String line = in.readLine();
-                if (line != null) {
+                if((line = in.readLine()) != null) {
                     System.out.println(">>> Server: " + line);
-                } else {
+                }else{
                     break;
                 }
             }
@@ -38,3 +38,21 @@ public class ChatClient {
         }
     }
 }
+
+
+
+//Sends
+//      String input;
+//      PrintWriter out = new PrintWriter(s.getOutputStream(), true);
+//      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+//      while ((input = br.readLine()).length() > 0){
+//        out.println(input);
+//      }
+
+
+//Receives
+//      String line;
+//      BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+//      while((line = in.readLine()) != null) {
+//        System.out.println(">>> Server: " + line);
+//      }
