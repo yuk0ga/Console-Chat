@@ -1,4 +1,4 @@
-package ConsoleChat;
+//package ConsoleChat;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -23,12 +23,6 @@ public class ChatServer {
 
     public static void main(String[] args) {
 
-        Receiver receiver = new Receiver();
-        Sender sender = new Sender();
-
-        Thread receive = new Thread(receiver);
-        Thread send = new Thread(sender);
-
         try{
             ss = new ServerSocket(port);
             System.out.println("Server Started with port: " + ss.getLocalPort());
@@ -43,15 +37,15 @@ public class ChatServer {
             line = in.readLine();
             input = br.readLine();
 
-            receive.start();
-            send.start();
+            while(true){
+                if (!line.equals("bye")) {
+                    System.out.println(">>> Client: " + line);
+                }
+                if (input.length()>0) {
+                    out.println(input);
+                }
+            }
 
-//            while((line = in.readLine()) != null) {
-//                System.out.println(">>> Client: " + line);
-//            }
-//            while ((input = br.readLine()).length()>0) {
-//                out.println(input);
-//            }
         }catch(IOException e){
             e.printStackTrace();
         }
@@ -59,19 +53,4 @@ public class ChatServer {
 
 }
 
-class Receiver implements Runnable {
-    public void run(){
-        while(ChatServer.line.length() > 0) {
-            System.out.println(">>> Client: " + ChatServer.line);
-        }
-    }
-}
 
-class Sender implements Runnable {
-    @Override
-    public void run() {
-        while(ChatServer.input.length() > 0){
-            ChatServer.out.println(ChatServer.input);
-        }
-    }
-}
