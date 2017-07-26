@@ -1,4 +1,7 @@
 
+//package ConsoleChat;
+
+
 import java.io.*;
 import java.net.Socket;
 
@@ -9,37 +12,54 @@ public class ChatClient {
 
     static Socket s;
 
-    static int port = 1234;
+    static int port;
 
-    static String line;
+    static String name;
 
     public static void main(String[] args) {
 
+        Receivemsg1 receive = new Receivemsg1();
+        Sendmsg1 send = new Sendmsg1();
+
+        Thread receiver = new Thread(receive);
+        Thread sender = new Thread(send);
+
         try{
-            s = new Socket(args[0], port);
+            port = Integer.parseInt(args[2]);
+            s = new Socket(args[1], port);
+            name = args[0];
             System.out.println("Connected to: " + s.getRemoteSocketAddress());
+            System.out.println("Welcome " + name + "!");
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
-            PrintWriter out = new PrintWriter(s.getOutputStream(), true);
-            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            receiver.start();
+            sender.start();
 
-            String input;
-
-            while(!(input = br.readLine()).equals("bye")) {
-                out.println(input);
-                if((line = in.readLine()) != null) {
-                    System.out.println(">>> Server: " + line);
-                }else{
-                    break;
-                }
-            }
         }catch(IOException e){
             e.printStackTrace();
         }
     }
 }
 
-
+class Sendmsg1 implements Runnable {
+    @Override
+    public void run() {
+        String input;
+        PrintWriter out = null;
+        try {
+            out = new PrintWriter(ChatClient.s.getOutputStream(), true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        try {
+            while (!(input = br.readLine()).equals("bye")){
+                out.println(input);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
 
 //Sends
 //      String input;
@@ -49,6 +69,26 @@ public class ChatClient {
 //        out.println(input);
 //      }
 
+
+class Receivemsg1 implements Runnable {
+    @Override
+    public void run() {
+        String line;
+        BufferedReader in = null;
+        try {
+            in = new BufferedReader(new InputStreamReader(ChatClient.s.getInputStream()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            while((line = in.readLine()) != null) {
+                System.out.println("> Server: " + line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
 
 //Receives
 //      String line;
