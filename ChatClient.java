@@ -10,7 +10,9 @@ public class ChatClient {
 
     static Socket s;
 
-    static int port = 1234;
+    static int port;
+
+    static String name;
 
     public static void main(String[] args) {
 
@@ -21,8 +23,11 @@ public class ChatClient {
         Thread sender = new Thread(send);
 
         try{
-            s = new Socket(args[0], port);
+            port = Integer.parseInt(args[2]);
+            s = new Socket(args[1], port);
+            name = args[0];
             System.out.println("Connected to: " + s.getRemoteSocketAddress());
+            System.out.println("Welcome " + name + "!");
 
             receiver.start();
             sender.start();

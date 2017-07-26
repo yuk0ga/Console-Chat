@@ -9,7 +9,7 @@ import java.net.Socket;
  */
 public class ChatServer {
 
-    static int port = 1234;
+    static int port;
 
     static ServerSocket ss;
     static Socket s;
@@ -23,6 +23,7 @@ public class ChatServer {
         Thread sender = new Thread(send);
 
         try{
+            port = Integer.parseInt(args[0]);
             ss = new ServerSocket(port);
             System.out.println("Server Started with port: " + ss.getLocalPort());
 
