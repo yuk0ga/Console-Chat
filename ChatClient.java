@@ -30,6 +30,7 @@ public class ChatClient {
             name = args[0];
             System.out.println("Connected to: " + s.getRemoteSocketAddress());
             System.out.println("Welcome " + name + "!");
+            System.out.println("** Note: Type 'bye' and press Enter to disconnect **");
 
             receiver.start();
             sender.start();
@@ -55,8 +56,10 @@ class Sendmsg1 implements Runnable {
             while (!(input = br.readLine()).equals("bye")){
                 out.println(input);
             }
+            out.println("Client disconnected");
+            ChatClient.s.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Disconnected");
         }
     }
 }
@@ -82,10 +85,15 @@ class Receivemsg1 implements Runnable {
         }
         try {
             while((line = in.readLine()) != null) {
+                if(line.equals("Server disconnected")){
+                    System.out.println("> Server: bye");
+                    System.out.println(line);
+                    break;
+                }
                 System.out.println("> Server: " + line);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Disconnected");
         }
     }
 }

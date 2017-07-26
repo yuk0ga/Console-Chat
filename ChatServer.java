@@ -3,6 +3,7 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 
 /**
  * Created by koga on 2017/07/19.
@@ -29,6 +30,7 @@ public class ChatServer {
 
             s = ss.accept();
             System.out.println("Connection Established with client: " + s.getRemoteSocketAddress());
+            System.out.println("** Note: Type 'bye' and press Enter to disconnect **");
 
             receiver.start();
             sender.start();
@@ -55,8 +57,10 @@ class Sendmsg implements Runnable {
             while (!(input = br.readLine()).equals("bye")){
                 out.println(input);
             }
+            out.println("Server disconnected");
+            ChatServer.s.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Disconnected");
         }
     }
 }
@@ -82,10 +86,15 @@ class Receivemsg implements Runnable {
         }
         try {
             while((line = in.readLine()) != null) {
+                if(line.equals("Client disconnected")){
+                    System.out.println("> Client: bye");
+                    System.out.println(line);
+                    break;
+                }
                 System.out.println("> Client: " + line);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Disconnected");
         }
     }
 }
